@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 DenaryDev
+ * Copyright (c) 2024 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(SodiumGameOptionPages.class)
 public class SodiumGameOptionPagesMixin {
 
-    @ModifyArg(method = "lambda$performance$51",
+    @ModifyArg(method = "lambda$performance$52",
             at = @At(value = "INVOKE",
                     target = "Lme/jellysquid/mods/sodium/client/gui/options/control/SliderControl;<init>(Lme/jellysquid/mods/sodium/client/gui/options/Option;IIILme/jellysquid/mods/sodium/client/gui/options/control/ControlValueFormatter;)V"
             ),
