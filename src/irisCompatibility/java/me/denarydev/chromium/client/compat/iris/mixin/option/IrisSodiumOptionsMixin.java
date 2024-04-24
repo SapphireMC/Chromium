@@ -8,7 +8,7 @@
 package me.denarydev.chromium.client.compat.iris.mixin.option;
 
 import me.jellysquid.mods.sodium.client.gui.options.control.ControlValueFormatter;
-import net.coderbot.iris.compat.sodium.impl.options.IrisSodiumOptions;
+import net.irisshaders.iris.compat.sodium.impl.options.IrisSodiumOptions;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
