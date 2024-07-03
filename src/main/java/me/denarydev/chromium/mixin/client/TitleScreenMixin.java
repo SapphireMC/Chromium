@@ -51,19 +51,19 @@ public abstract class TitleScreenMixin extends Screen {
         final int size = 40;
         final float playerLookX = -mouseX + playerX;
         final float lookY = -mouseY + height - size;
-        renderEntityFollowsMouse(context, playerX, height, playerLookX, lookY, player);
+        chromium$renderEntityFollowsMouse(context, playerX, height, playerLookX, lookY, player);
 
         final var entity = ChromiumClientMod.getRandomEntity();
         final int entityX = this.width / 2 + 160;
         final float entityLookX = -mouseX + entityX;
         if (entity != null) {
-            renderEntityFollowsMouse(context, entityX, height, entityLookX, lookY, entity);
+            chromium$renderEntityFollowsMouse(context, entityX, height, entityLookX, lookY, entity);
         }
     }
 
     @SuppressWarnings({"deprecation"})
     @Unique
-    private void renderEntityFollowsMouse(DrawContext context, int x, int y, float lookX, float lookY, LivingEntity player) {
+    private void chromium$renderEntityFollowsMouse(DrawContext context, int x, int y, float lookX, float lookY, LivingEntity player) {
         final float sideRot = (float) Math.atan(lookX / 200);
         final float upRot = (float) Math.atan(lookY / 200);
         final var poseMultiplier = (new Quaternionf()).rotateZ((float) Math.PI);

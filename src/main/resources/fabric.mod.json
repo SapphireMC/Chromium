@@ -40,5 +40,8 @@
     "java": "21",
     "fabric-api": ">=0.100.4",
     "cloth-config": "15.0.x"
+  },
+  "breaks": {
+    "rrls": "*"
   }
 }

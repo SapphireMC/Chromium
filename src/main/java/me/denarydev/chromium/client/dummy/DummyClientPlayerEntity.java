@@ -22,7 +22,7 @@ public class DummyClientPlayerEntity extends ClientPlayerEntity {
     }
 
     private DummyClientPlayerEntity() {
-        super(MinecraftClient.getInstance(), DummyClientLevel.getInstance(), DummyClientPacketListener.getInstance(), null, null, false, false);
+        super(MinecraftClient.getInstance(), DummyClientWorld.getInstance(), DummyClientPlayNetworkHandler.getInstance(), null, null, false, false);
     }
 
     @Override

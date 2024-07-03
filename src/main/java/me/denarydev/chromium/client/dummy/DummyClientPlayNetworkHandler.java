@@ -38,19 +38,19 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.SpawnSettings;
 
-public class DummyClientPacketListener extends ClientPlayNetworkHandler {
+public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
 
-    private static DummyClientPacketListener instance;
+    private static DummyClientPlayNetworkHandler instance;
 
-    public static DummyClientPacketListener getInstance() {
-        if (instance == null) instance = new DummyClientPacketListener();
+    public static DummyClientPlayNetworkHandler getInstance() {
+        if (instance == null) instance = new DummyClientPlayNetworkHandler();
         return instance;
     }
 
     private final DynamicRegistryManager dummyRegistryManager;
     private final DummyPlayerListEntry dummyPlayerListEntry;
 
-    private DummyClientPacketListener() {
+    private DummyClientPlayNetworkHandler() {
         super(MinecraftClient.getInstance(), new ClientConnection(NetworkSide.CLIENTBOUND), new ClientConnectionState(MinecraftClient.getInstance().getGameProfile(), null, null, FeatureSet.of(FeatureFlags.VANILLA), null, null, null, null, null, false, null, null));
         this.dummyRegistryManager = dummyRegistryManager();
         this.dummyPlayerListEntry = new DummyPlayerListEntry();

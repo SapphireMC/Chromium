@@ -7,7 +7,7 @@
  */
 package me.denarydev.chromium.client;
 
-import me.denarydev.chromium.client.dummy.DummyClientLevel;
+import me.denarydev.chromium.client.dummy.DummyClientWorld;
 import me.denarydev.chromium.client.gui.OptionsScreenBuilder;
 import lombok.Getter;
 import me.denarydev.chromium.client.network.ChromiumHelloCustomPayload;
@@ -83,7 +83,7 @@ public class ChromiumClientMod implements ClientModInitializer {
                 .filter(e -> e.getSpawnGroup() != SpawnGroup.MISC)
                 .filter(e -> e != EntityType.ENDER_DRAGON && e != EntityType.WITHER)
                 .toList();
-        final var entity = entities.get(RANDOM.nextInt(entities.size())).create(DummyClientLevel.getInstance());
+        final var entity = entities.get(RANDOM.nextInt(entities.size())).create(DummyClientWorld.getInstance());
         if (entity instanceof LivingEntity livingEntity) randomEntity = livingEntity;
     }
 }

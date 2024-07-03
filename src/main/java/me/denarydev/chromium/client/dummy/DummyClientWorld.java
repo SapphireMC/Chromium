@@ -9,6 +9,7 @@ package me.denarydev.chromium.client.dummy;
 
 import com.mojang.datafixers.util.Either;
 import me.denarydev.chromium.ChromiumMod;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -18,6 +19,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.profiler.ProfilerSystem;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -28,21 +30,21 @@ import java.util.OptionalLong;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class DummyClientLevel extends ClientWorld {
+public class DummyClientWorld extends ClientWorld {
 
-    private static DummyClientLevel instance;
+    private static DummyClientWorld instance;
 
     private static final DimensionType DUMMY = new DimensionType(OptionalLong.empty(), true, false, false, false, 1.0, false, false, 0, 256, 256, BlockTags.INFINIBURN_OVERWORLD, Identifier.of(ChromiumMod.MOD_ID, "dummy_type"), 1, new DimensionType.MonsterSettings(false, false, ConstantIntProvider.create(0), 0));
     private static final RegistryKey<DimensionType> DUMMY_TYPE_KEY = RegistryKey.of(RegistryKeys.DIMENSION_TYPE, Identifier.of(ChromiumMod.MOD_ID, "dummy_type"));
     private static final RegistryKey<World> WORLD_KEY = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(ChromiumMod.MOD_ID, "dummy"));
 
-    public static DummyClientLevel getInstance() {
-        if (instance == null) instance = new DummyClientLevel();
+    public static DummyClientWorld getInstance() {
+        if (instance == null) instance = new DummyClientWorld();
         return instance;
     }
 
-    private DummyClientLevel() {
-        super(DummyClientPacketListener.getInstance(), new Properties(Difficulty.PEACEFUL, false, true), WORLD_KEY, new DummyDirect<>(DUMMY_TYPE_KEY, DUMMY), 0, 0, () -> null, null, false, 0);
+    private DummyClientWorld() {
+        super(DummyClientPlayNetworkHandler.getInstance(), new Properties(Difficulty.PEACEFUL, false, true), WORLD_KEY, new DummyDirect<>(DUMMY_TYPE_KEY, DUMMY), 0, 0, () -> MinecraftClient.getInstance().getProfiler(), null, false, 0);
     }
 
     private record DummyDirect<T>(RegistryKey<T> key, T value) implements RegistryEntry<T> {
