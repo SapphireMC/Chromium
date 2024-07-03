@@ -1,25 +1,23 @@
 [versions]
 # Fabric dependencies
 # The latest versions are available at https://fabricmc.net/develop
-minecraft = "1.20.4"
-yarn = "1.20.4+build.3"
-loader = "0.15.6"
-fabric = "0.96.1+1.20.4"
+minecraft = "1.21"
+yarn = "1.21+build.7"
+loader = "0.15.11"
+fabric = "0.100.4+1.21"
 
 # Fabric loom
-loom = "1.5-SNAPSHOT"
+loom = "1.6-SNAPSHOT"
 
 # Mod dependencies
-sodium = "mc1.20.4-0.5.8"
-iris = "1.7.0+1.20.4"
-clothconfig = "13.0.121"
-modmenu = "9.0.0"
-ldl = "2.3.4+1.20.4"
-spruceui = "5.0.3+1.20.4"
+sodium = "mc1.21-0.5.11"
+iris = "1.7.3+1.21"
+clothconfig = "15.0.127"
+modmenu = "11.0.1"
 
 # Other dependencies
 jccp = "1.4.14"
-glsl = "2.0.0-pre13"
+glsl = "2.0.1"
 lombok = "1.18.30"
 
 [libraries]
@@ -36,8 +34,6 @@ mod_sodium = { module = "maven.modrinth:sodium", version.ref = "sodium" }
 mod_iris = { module = "maven.modrinth:iris", version.ref = "iris" }
 mod_clothconfig = { module = "me.shedaniel.cloth:cloth-config-fabric", version.ref = "clothconfig" }
 mod_modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-mod_ldl = { module = "maven.modrinth:lambdynamiclights", version.ref = "ldl" }
-mod_ldl_spruceui = { module = "dev.lambdaurora:spruceui", version.ref = "spruceui" }
 
 # Other dependencies
 jccp = { module = "org.anarres:jcpp", version.ref = "jccp" }

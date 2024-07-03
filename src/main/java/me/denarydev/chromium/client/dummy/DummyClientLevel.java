@@ -32,9 +32,9 @@ public class DummyClientLevel extends ClientWorld {
 
     private static DummyClientLevel instance;
 
-    private static final DimensionType DUMMY = new DimensionType(OptionalLong.empty(), true, false, false, false, 1.0, false, false, 0, 256, 256, BlockTags.INFINIBURN_OVERWORLD, new Identifier(ChromiumMod.MOD_ID, "dummy_type"), 1, new DimensionType.MonsterSettings(false, false, ConstantIntProvider.create(0), 0));
-    private static final RegistryKey<DimensionType> DUMMY_TYPE_KEY = RegistryKey.of(RegistryKeys.DIMENSION_TYPE, new Identifier(ChromiumMod.MOD_ID, "dummy_type"));
-    private static final RegistryKey<World> WORLD_KEY = RegistryKey.of(RegistryKeys.WORLD, new Identifier(ChromiumMod.MOD_ID, "dummy"));
+    private static final DimensionType DUMMY = new DimensionType(OptionalLong.empty(), true, false, false, false, 1.0, false, false, 0, 256, 256, BlockTags.INFINIBURN_OVERWORLD, Identifier.of(ChromiumMod.MOD_ID, "dummy_type"), 1, new DimensionType.MonsterSettings(false, false, ConstantIntProvider.create(0), 0));
+    private static final RegistryKey<DimensionType> DUMMY_TYPE_KEY = RegistryKey.of(RegistryKeys.DIMENSION_TYPE, Identifier.of(ChromiumMod.MOD_ID, "dummy_type"));
+    private static final RegistryKey<World> WORLD_KEY = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(ChromiumMod.MOD_ID, "dummy"));
 
     public static DummyClientLevel getInstance() {
         if (instance == null) instance = new DummyClientLevel();
@@ -68,6 +68,11 @@ public class DummyClientLevel extends ClientWorld {
 
         @Override
         public boolean isIn(TagKey<T> tag) {
+            return false;
+        }
+
+        @Override
+        public boolean matches(RegistryEntry<T> entry) {
             return false;
         }
 

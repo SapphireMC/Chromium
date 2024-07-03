@@ -18,7 +18,9 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class IrisCompatMixinPlugin implements IMixinConfigPlugin {
     private final List<AllowedIrisVersion> allowedIrisVersions = List.of(
-            new AllowedIrisVersion("1.7.0")
+            new AllowedIrisVersion("1.7.1"),
+            new AllowedIrisVersion("1.7.2"),
+            new AllowedIrisVersion("1.7.3")
     );
     private boolean validIrisVersion = false;
 

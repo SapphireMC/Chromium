@@ -7,16 +7,17 @@
  */
 package me.denarydev.chromium.client;
 
-import com.google.common.io.ByteArrayDataOutput;
 import me.denarydev.chromium.client.dummy.DummyClientLevel;
 import me.denarydev.chromium.client.gui.OptionsScreenBuilder;
-import me.denarydev.chromium.client.network.Packet;
 import lombok.Getter;
+import me.denarydev.chromium.client.network.ChromiumHelloCustomPayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -36,7 +37,7 @@ public class ChromiumClientMod implements ClientModInitializer {
     private KeyBinding configKey;
 
     private final int protocolId = 0;
-    private final Identifier hello = new Identifier("chromium", "client");
+    private final Identifier hello = Identifier.of("chromium", "client");
 
     @Override
     public void onInitializeClient() {
@@ -54,13 +55,8 @@ public class ChromiumClientMod implements ClientModInitializer {
                 "key.chromium.category"
         ));
 
-        ClientPlayConnectionEvents.JOIN.register(((handler, sender, client) -> {
-            if (!client.isConnectedToLocalServer()) {
-                ByteArrayDataOutput out = Packet.out();
-                out.writeInt(protocolId);
-                Packet.send(hello, out);
-            }
-        }));
+        initializeClientNetworking();
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (configKey.isPressed()) {
                 client.setScreen(OptionsScreenBuilder.build());
@@ -69,6 +65,13 @@ public class ChromiumClientMod implements ClientModInitializer {
         ScreenEvents.BEFORE_INIT.register(((client, screen, scaledWidth, scaledHeight) -> {
             if (screen instanceof TitleScreen) updateRandomEntity();
         }));
+    }
+
+    private void initializeClientNetworking() {
+        PayloadTypeRegistry.configurationC2S().register(ChromiumHelloCustomPayload.ID, ChromiumHelloCustomPayload.CODEC);
+
+        ClientConfigurationConnectionEvents.COMPLETE.register((handler, client) ->
+                ClientConfigurationNetworking.send(new ChromiumHelloCustomPayload()));
     }
 
     private static final Random RANDOM = new Random();

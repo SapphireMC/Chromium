@@ -21,7 +21,7 @@ public class HopperBlockEntityMixin {
         return ChromiumMod.getConfig().hopperTransfer;
     }
 
-    @ModifyArg(method = "insert", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventory;removeStack(II)Lnet/minecraft/item/ItemStack;"), index = 1)
+    @ModifyArg(method = "insert", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/HopperBlockEntity;removeStack(II)Lnet/minecraft/item/ItemStack;"), index = 1)
     private static int chromium$hopperAmount$insert(int amount) {
         return ChromiumMod.getConfig().hopperAmount;
     }

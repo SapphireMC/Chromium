@@ -1,6 +1,0 @@
-{
-  "required": false,
-  "package": "me.denarydev.chromium.client.compat.ldl.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "client": []
-}

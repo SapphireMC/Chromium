@@ -31,15 +31,14 @@
   "mixins": [
     "mixins.chromium.json",
     "mixins.chromium.compat.sodium.json",
-    "mixins.chromium.compat.iris.json",
-    "mixins.chromium.compat.ldl.json"
+    "mixins.chromium.compat.iris.json"
   ],
 
   "depends": {
-    "fabricloader": "0.15.x",
-    "minecraft": "1.20.4",
-    "java": "17",
-    "fabric-api": ">=0.90",
-    "cloth-config": "13.0.x"
+    "fabricloader": ">=0.15.11",
+    "minecraft": "1.21",
+    "java": "21",
+    "fabric-api": ">=0.100.4",
+    "cloth-config": "15.0.x"
   }
 }

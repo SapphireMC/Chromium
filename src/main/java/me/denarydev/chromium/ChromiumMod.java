@@ -76,7 +76,7 @@ public class ChromiumMod implements ModInitializer {
     public static String getLightString(PlayerEntity player) {
         final var client = MinecraftClient.getInstance();
         if (player != null && client.world != null) {
-            final var blockPos = player.getSteppingPos();
+            final var blockPos = player.getBlockPos();
             final int clientLight = client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
             final int skyLight = client.world.getLightLevel(LightType.SKY, blockPos);
             final int blockLight = client.world.getLightLevel(LightType.BLOCK, blockPos);

@@ -10,7 +10,7 @@ package me.denarydev.chromium.client.dummy;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.entity.player.PlayerModelPart;
 import org.jetbrains.annotations.Nullable;
 
 public class DummyClientPlayerEntity extends ClientPlayerEntity {

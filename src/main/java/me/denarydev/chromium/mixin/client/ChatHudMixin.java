@@ -15,6 +15,7 @@ import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
@@ -63,7 +64,7 @@ public abstract class ChatHudMixin {
 
 
     // Change message history size
-    @ModifyConstant(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
+    @ModifyConstant(method = "addVisibleMessage",
             constant = @Constant(intValue = 100)
     )
     private int chromium$getMaxMessages(int max) {
@@ -74,11 +75,15 @@ public abstract class ChatHudMixin {
     @Unique
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile("\\[\\d{2}:\\d{2}:\\d{2}]");
 
-    @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
-            at = @At(value = "HEAD", ordinal = 0),
-            argsOnly = true
+    @ModifyArg(
+            method = "addVisibleMessage",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/util/ChatMessages;breakRenderedChatMessageLines(Lnet/minecraft/text/StringVisitable;ILnet/minecraft/client/font/TextRenderer;)Ljava/util/List;"
+            ),
+            index = 0
     )
-    private Text chromium$messageWithTimestamp(Text message) {
+    private StringVisitable chromium$messageWithTimestamp(StringVisitable message) {
         final var builder = Text.empty();
         final var msgString = message.getString();
         if (ChromiumMod.getConfig().showTimestamp && !TIMESTAMP_PATTERN.matcher(msgString.substring(0, 13)).find()) {
@@ -87,7 +92,7 @@ public abstract class ChatHudMixin {
                     (style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText))));
             builder.append(timeText);
         }
-        builder.append(message);
+        builder.append((Text) message);
         return builder;
     }
 
