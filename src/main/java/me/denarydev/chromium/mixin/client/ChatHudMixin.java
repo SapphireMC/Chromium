@@ -75,15 +75,13 @@ public abstract class ChatHudMixin {
     @Unique
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile("\\[\\d{2}:\\d{2}:\\d{2}]");
 
-    @ModifyArg(
-            method = "addVisibleMessage",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/util/ChatMessages;breakRenderedChatMessageLines(Lnet/minecraft/text/StringVisitable;ILnet/minecraft/client/font/TextRenderer;)Ljava/util/List;"
-            ),
-            index = 0
+    @ModifyVariable(
+            method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V",
+            at = @At("HEAD"),
+            ordinal = 0,
+            argsOnly = true
     )
-    private StringVisitable chromium$messageWithTimestamp(StringVisitable message) {
+    private Text chromium$messageWithTimestamp(Text message) {
         final var builder = Text.empty();
         final var msgString = message.getString();
         if (ChromiumMod.getConfig().showTimestamp && !TIMESTAMP_PATTERN.matcher(msgString.substring(0, 13)).find()) {
@@ -92,7 +90,7 @@ public abstract class ChatHudMixin {
                     (style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText))));
             builder.append(timeText);
         }
-        builder.append((Text) message);
+        builder.append(message);
         return builder;
     }
 
