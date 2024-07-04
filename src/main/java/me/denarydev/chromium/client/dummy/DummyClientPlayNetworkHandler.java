@@ -11,6 +11,8 @@ import com.mojang.serialization.Lifecycle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientConnectionState;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.damage.DamageEffects;
 import net.minecraft.entity.damage.DamageScaling;
 import net.minecraft.entity.damage.DamageType;
@@ -37,8 +39,10 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.SpawnSettings;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
@@ -51,16 +55,24 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
     }
 
     private final DynamicRegistryManager dummyRegistryManager;
+    private final DummyPlayerListEntry dummyPlayerListEntry;
 
     private DummyClientPlayNetworkHandler() {
         super(MinecraftClient.getInstance(), new ClientConnection(NetworkSide.CLIENTBOUND), new ClientConnectionState(MinecraftClient.getInstance().getGameProfile(), null, null, FeatureSet.of(FeatureFlags.VANILLA), null, null, null, null, null, false, null, null));
         this.dummyRegistryManager = dummyRegistryManager();
+        this.dummyPlayerListEntry = new DummyPlayerListEntry();
     }
 
     @NotNull
     @Override
     public DynamicRegistryManager.Immutable getRegistryManager() {
         return dummyRegistryManager.toImmutable();
+    }
+
+    @Nullable
+    @Override
+    public PlayerListEntry getPlayerListEntry(@NotNull UUID uuid) {
+        return dummyPlayerListEntry;
     }
 
     private DynamicRegistryManager dummyRegistryManager() {
@@ -173,5 +185,16 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         final var registry = getRegistryManager().get(RegistryKeys.WOLF_VARIANT);
         final int index = ThreadLocalRandom.current().nextInt(0, 9);
         return registry.getEntry(index).orElse(null);
+    }
+
+    public static class DummyPlayerListEntry extends PlayerListEntry {
+        public DummyPlayerListEntry() {
+            super(MinecraftClient.getInstance().getGameProfile(), false);
+        }
+
+        @Override
+        public @NotNull SkinTextures getSkinTextures() {
+            return super.getSkinTextures();
+        }
     }
 }
