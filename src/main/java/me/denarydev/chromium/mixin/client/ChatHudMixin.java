@@ -15,7 +15,6 @@ import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
@@ -84,7 +83,7 @@ public abstract class ChatHudMixin {
     private Text chromium$messageWithTimestamp(Text message) {
         final var builder = Text.empty();
         final var msgString = message.getString();
-        if (ChromiumMod.getConfig().showTimestamp && !TIMESTAMP_PATTERN.matcher(msgString.substring(0, 13)).find()) {
+        if (ChromiumMod.getConfig().showTimestamp && (msgString.length() < 13 || !TIMESTAMP_PATTERN.matcher(msgString.substring(0, 13)).find())) {
             final var hoverText = Text.translatable(Formatting.YELLOW + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss ").format(new Date()) + TimeZone.getDefault().getID());
             final var timeText = Text.translatable(Formatting.GRAY + new SimpleDateFormat("[HH:mm:ss] ").format(new Date()) + Formatting.RESET).styled(
                     (style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText))));
