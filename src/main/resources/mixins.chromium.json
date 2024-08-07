@@ -7,18 +7,16 @@
     "defaultRequire": 1
   },
   "client": [
-    "client.ChatHudMixin",
-    "client.InGameHudMixin",
-    "client.LivingEntityRendererMixin",
-    "client.TitleScreenMixin",
-    "client.WindowMixin",
-    "client.KeyboardMixin",
-    "client.GameModeSelectionScreenMixin",
-    "client.MainMixin",
     "client.BlockEntityRendererMixin",
-    "client.PlayerListHudMixin"
-  ],
-  "mixins": [
-    "shared.HopperBlockEntityMixin"
+    "client.ChatHudLine$VisibleMixin",
+    "client.ChatHudMixin",
+    "client.GameModeSelectionScreenMixin",
+    "client.InGameHudMixin",
+    "client.KeyboardMixin",
+    "client.LivingEntityRendererMixin",
+    "client.MainMixin",
+    "client.PlayerListHudMixin",
+    "client.TitleScreenMixin",
+    "client.WindowMixin"
   ]
 }

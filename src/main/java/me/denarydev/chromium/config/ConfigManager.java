@@ -9,8 +9,8 @@ package me.denarydev.chromium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import me.denarydev.chromium.ChromiumMod;
 import lombok.Getter;
+import me.denarydev.chromium.ChromiumMod;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
 
@@ -43,31 +43,17 @@ public class ConfigManager {
                     config = gson.fromJson(content, ChromiumConfig.class);
 
                     boolean changed = false;
-                    if (config.hopperTransfer < 2) {
-                        ChromiumMod.LOGGER.warn("Hopper transfer must not be less than 2");
-                        config.hopperTransfer = 2;
-                        changed = true;
-                    } else if (config.hopperTransfer > 200) {
-                        ChromiumMod.LOGGER.warn("Hopper transfer must not be greater than 200");
-                        config.hopperTransfer = 200;
-                        changed = true;
-                    } else if (config.hopperAmount < 1) {
-                        ChromiumMod.LOGGER.warn("Hopper amount must not be less than 1");
-                        config.hopperAmount = 1;
-                        changed = true;
-                    } else if (config.hopperAmount > 64) {
-                        ChromiumMod.LOGGER.warn("Hopper amount must not be greater than 64");
-                        config.hopperAmount = 64;
-                        changed = true;
-                    } else if (config.messagesHistorySize < 100) {
+                    if (config.messagesHistorySize < 100) {
                         ChromiumMod.LOGGER.warn("Max messages must not be greater than 100");
                         config.messagesHistorySize = 100;
                         changed = true;
-                    } else if (config.messagesHistorySize > 32767) {
+                    }
+                    if (config.messagesHistorySize > 32767) {
                         ChromiumMod.LOGGER.warn("Max messages must not be greater than 32767");
                         config.messagesHistorySize = 32767;
                         changed = true;
                     }
+
                     if (changed) writeConfig(async);
                 } else {
                     writeNewConfig();

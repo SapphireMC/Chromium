@@ -16,7 +16,7 @@
   "license": "MIT",
   "icon": "assets/chromium/icon.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
       "me.denarydev.chromium.ChromiumMod"

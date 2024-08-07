@@ -33,7 +33,7 @@ dependencies {
     ).forEach {
         modImplementation(fabricApi.module(it, libs.versions.fabric.get()))
     }
-1
+
     if (sodiumCompatibility) {
         modImplementation(libs.mod.sodium)
     }
@@ -57,6 +57,10 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/chromium.accesswidener")
 }
 
 sourceSets {
@@ -92,7 +96,7 @@ sourceSets {
 tasks {
     withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(21)
     }
 
     withType<Javadoc> {

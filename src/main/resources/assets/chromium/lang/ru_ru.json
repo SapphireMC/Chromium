@@ -1,6 +1,8 @@
 {
   "key.chromium.config": "Меню настроек Chromium",
 
+  "button.chromium.continue": "Продолжить",
+
   "title.chromium.config": "Настройки Chromium",
   "category.chromium.general": "Основные настройки",
   "category.chromium.info": "Информация",

@@ -162,18 +162,18 @@ public class OptionsScreenBuilder {
                 .build();
 
         /*========================= Hopper settings =========================*/
-        final var hopperTransfer = entryBuilder.startIntField(Text.translatable("options.chromium.mechanics.hopperTransfer"), current.hopperTransfer)
-                .setDefaultValue(defaults.hopperTransfer)
-                .setMin(2).setMax(200)
-                .setTooltip(getTooltip("options.chromium.mechanics.hopperTransfer"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().hopperTransfer = it)
-                .build();
-        final var hopperAmount = entryBuilder.startIntField(Text.translatable("options.chromium.mechanics.hopperAmount"), current.hopperAmount)
-                .setDefaultValue(defaults.hopperAmount)
-                .setMin(1).setMax(64)
-                .setTooltip(getTooltip("options.chromium.mechanics.hopperAmount"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().hopperAmount = it)
-                .build();
+//        final var hopperTransfer = entryBuilder.startIntField(Text.translatable("options.chromium.mechanics.hopperTransfer"), current.hopperTransfer)
+//                .setDefaultValue(defaults.hopperTransfer)
+//                .setMin(2).setMax(200)
+//                .setTooltip(getTooltip("options.chromium.mechanics.hopperTransfer"))
+//                .setSaveConsumer(it -> ChromiumMod.getConfig().hopperTransfer = it)
+//                .build();
+//        final var hopperAmount = entryBuilder.startIntField(Text.translatable("options.chromium.mechanics.hopperAmount"), current.hopperAmount)
+//                .setDefaultValue(defaults.hopperAmount)
+//                .setMin(1).setMax(64)
+//                .setTooltip(getTooltip("options.chromium.mechanics.hopperAmount"))
+//                .setSaveConsumer(it -> ChromiumMod.getConfig().hopperAmount = it)
+//                .build();
 
         final var infoBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.info"));
         infoBuilder.add(toggleShowFps);
@@ -204,19 +204,19 @@ public class OptionsScreenBuilder {
         teBuider.add(skullRenderDistance);
         renderBuilder.add(teBuider.build());
 
-        final var mechanicsBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.mechanics"));
-
-        final var hopperBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.mechanics.hopper"));
-        hopperBuilder.add(hopperTransfer);
-        hopperBuilder.add(hopperAmount);
-        hopperBuilder.setExpanded(true);
-        mechanicsBuilder.add(hopperBuilder.build());
+//        final var mechanicsBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.mechanics"));
+//
+//        final var hopperBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.mechanics.hopper"));
+//        hopperBuilder.add(hopperTransfer);
+//        hopperBuilder.add(hopperAmount);
+//        hopperBuilder.setExpanded(true);
+//        mechanicsBuilder.add(hopperBuilder.build());
 
         category.addEntry(infoBuilder.build());
         category.addEntry(chatBuilder.build());
         category.addEntry(tablistBuilder.build());
         category.addEntry(renderBuilder.build());
-        category.addEntry(mechanicsBuilder.build());
+//        category.addEntry(mechanicsBuilder.build());
 
         return builder.build();
     }

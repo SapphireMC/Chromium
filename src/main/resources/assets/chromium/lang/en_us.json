@@ -2,6 +2,8 @@
   "key.chromium.category": "Chromium",
   "key.chromium.config": "Chromium Settings Menu",
 
+  "button.chromium.continue": "Continue",
+
   "title.chromium.config": "Chromium Settings",
   "category.chromium.general": "General settings",
   "category.chromium.info": "Info",
