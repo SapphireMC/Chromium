@@ -33,6 +33,7 @@
     "mixins.chromium.compat.sodium.json",
     "mixins.chromium.compat.iris.json"
   ],
+  "accessWidener": "chromium.accesswidener",
 
   "depends": {
     "fabricloader": ">=0.15.11",
