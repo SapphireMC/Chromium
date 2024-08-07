@@ -95,6 +95,7 @@ public class ChromiumClientMod implements ClientModInitializer {
                 continueInfo.lastName = serverInfo.name;
                 continueInfo.lastAddress = serverInfo.address;
             }
+            ChromiumMod.getConfigManager().writeConfig(true);
         }));
     }
 
