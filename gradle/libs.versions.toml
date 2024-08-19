@@ -1,10 +1,10 @@
 [versions]
 # Fabric dependencies
 # The latest versions are available at https://fabricmc.net/develop
-minecraft = "1.21"
-yarn = "1.21+build.9"
-loader = "0.16.0"
-fabric = "0.101.2+1.21"
+minecraft = "1.21.1"
+yarn = "1.21.1+build.3"
+loader = "0.16.2"
+fabric = "0.102.1+1.21.1"
 
 # Fabric loom
 loom = "1.7-SNAPSHOT"
@@ -12,7 +12,7 @@ loom = "1.7-SNAPSHOT"
 # Mod dependencies
 sodium = "mc1.21-0.5.11"
 iris = "1.7.3+1.21"
-clothconfig = "15.0.127"
+clothconfig = "15.0.130"
 modmenu = "11.0.1"
 
 # Other dependencies
