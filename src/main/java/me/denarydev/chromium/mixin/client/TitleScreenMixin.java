@@ -42,6 +42,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -196,11 +197,11 @@ public abstract class TitleScreenMixin extends Screen {
                 continueServerInfo = new ServerInfo(continueInfo.lastName, continueInfo.lastAddress, ServerInfo.ServerType.OTHER);
                 continueServerInfo.label = Text.translatable("multiplayer.status.pinging");
                 try {
-                    Runnable donothing = () -> {
+                    Runnable doNothing = () -> {
                     };
-                    serverListPinger.add(continueServerInfo, donothing, donothing);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    serverListPinger.add(continueServerInfo, doNothing, doNothing);
+                } catch (UnknownHostException e) {
+                    ChromiumMod.LOGGER.error("Failed to connect to server", e);
                 }
             }
             continueButtonReadyToShow = true;
@@ -220,16 +221,14 @@ public abstract class TitleScreenMixin extends Screen {
         if (continueButtonWidget.isHovered() && this.continueButtonReadyToShow) {
             final var continueInfo = ChromiumMod.getConfig().continueInfo;
             if (continueInfo.local) {
+                final var list = new ArrayList<OrderedText>();
                 if (continueInfo.lastAddress.isEmpty()) {
-                    final var list = new ArrayList<OrderedText>();
                     list.add(Text.translatable("selectWorld.create").formatted(Formatting.GRAY).asOrderedText());
-                    context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
                 } else {
-                    final var list = new ArrayList<OrderedText>();
                     list.add(Text.translatable("menu.singleplayer").formatted(Formatting.GRAY).asOrderedText());
                     list.add(Text.literal(continueInfo.lastName).asOrderedText());
-                    context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
                 }
+                context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
             } else {
                 final var list = new ArrayList<>(this.client.textRenderer.wrapLines(continueServerInfo.label, 270));
                 list.addFirst(Text.literal(continueServerInfo.name).formatted(Formatting.GRAY).asOrderedText());

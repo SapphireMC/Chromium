@@ -8,11 +8,8 @@
 package me.denarydev.chromium.mixin.client;
 
 import me.denarydev.chromium.ChromiumMod;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
-import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -103,7 +100,7 @@ public abstract class ChatHudMixin {
     }
 
     @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", at = @At("TAIL"))
-    private void chromium$captureMessageTimestamps(Text message, MessageSignatureData signatureData, MessageIndicator indicator, CallbackInfo ci) {
+    private void chromium$captureMessageTimestamps(CallbackInfo ci) {
         chromium$messageTimestamps.addFirst(System.currentTimeMillis());
         while (this.chromium$messageTimestamps.size() > this.visibleMessages.size()) {
             this.chromium$messageTimestamps.removeLast();

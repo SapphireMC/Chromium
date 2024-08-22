@@ -7,9 +7,9 @@
  */
 package me.denarydev.chromium;
 
+import lombok.Getter;
 import me.denarydev.chromium.config.ChromiumConfig;
 import me.denarydev.chromium.config.ConfigManager;
-import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;

@@ -8,10 +8,10 @@
 package me.denarydev.chromium.client;
 
 import com.google.common.io.Files;
+import lombok.Getter;
 import me.denarydev.chromium.ChromiumMod;
 import me.denarydev.chromium.client.dummy.DummyClientWorld;
 import me.denarydev.chromium.client.gui.OptionsScreenBuilder;
-import lombok.Getter;
 import me.denarydev.chromium.client.network.ChromiumHelloCustomPayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -28,7 +28,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import org.lwjgl.glfw.GLFW;
@@ -41,16 +40,13 @@ public class ChromiumClientMod implements ClientModInitializer {
 
     private KeyBinding configKey;
 
-    private final int protocolId = 0;
-    private final Identifier hello = Identifier.of("chromium", "client");
-
     @Override
     public void onInitializeClient() {
         if (Boolean.getBoolean("chromium.killmclauncher") && Util.getOperatingSystem().equals(Util.OperatingSystem.WINDOWS)) {
             try {
                 Runtime.getRuntime().exec("taskkill /F /IM Minecraft.exe");
             } catch (IOException e) {
-                e.printStackTrace();
+                ChromiumMod.LOGGER.error("Failed to kill minecraft launcher", e);
             }
         }
         configKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
