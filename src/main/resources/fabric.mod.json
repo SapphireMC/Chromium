@@ -35,6 +35,7 @@
     "fabricloader": ">=0.16.10",
     "minecraft": "1.21.4",
     "java": ">=21",
+    "fabric": ">=0.114",
     "yet_another_config_lib_v3": ">=3.6.0"
   },
   "breaks": {

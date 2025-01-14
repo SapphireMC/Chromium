@@ -14,6 +14,9 @@ sodium = "mc1.21.4-0.6.6-fabric"
 modmenu = "13.0.0"
 yacl = "3.6.2+1.21.4-fabric"
 
+# Other plugins
+licenser = "0.6.1"
+
 [libraries]
 # Minecraft
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -29,4 +32,8 @@ mod_modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 mod_yacl = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl" }
 
 [plugins]
+# Fabric loom
 loom = { id = "fabric-loom", version.ref = "loom" }
+
+# Other plugins
+licenser = { id = "org.cadixdev.licenser", version.ref = "licenser" }

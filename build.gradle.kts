@@ -2,6 +2,7 @@ plugins {
     java
     `maven-publish`
     alias(libs.plugins.loom)
+    alias(libs.plugins.licenser)
 }
 
 val sodiumCompatibility = project.properties["sodiumCompatibility"].toString().toBoolean()
@@ -46,6 +47,13 @@ java {
     }
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+}
+
+license {
+    include("**/me/denarydev/chromium/**")
+
+    header(file("HEADER"))
+    newLine(false)
 }
 
 loom {
