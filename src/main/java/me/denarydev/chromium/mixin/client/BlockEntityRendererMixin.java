@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -36,7 +36,7 @@ public interface BlockEntityRendererMixin<T extends BlockEntity> {
 
     @Unique
     default double getRenderDistance(T blockEntity) {
-        final var config = ChromiumMod.getConfig();
+        final var config = ChromiumMod.config();
 
         if (blockEntity instanceof BannerBlockEntity) {
             return config.bannerRenderDistance;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
  * @author DenaryDev
  * @since 19:54 14.12.2023
  */
-public class ColorUtils {
+public final class ColorUtils {
     public static final int PING_START = 0;
     public static final int PING_MID = 150;
     public static final int PING_END = 300;

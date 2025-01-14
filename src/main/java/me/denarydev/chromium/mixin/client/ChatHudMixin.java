@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -58,7 +58,7 @@ public abstract class ChatHudMixin {
             constant = @Constant(intValue = 100)
     )
     private int chromium$getMaxMessages(int max) {
-        return ChromiumMod.getConfig().messagesHistorySize;
+        return ChromiumMod.config().messagesHistorySize;
     }
 
     // Timestamp prefix
@@ -74,7 +74,7 @@ public abstract class ChatHudMixin {
     private Text chromium$messageWithTimestamp(Text message) {
         final var builder = Text.empty();
         final var msgString = message.getString();
-        if (ChromiumMod.getConfig().showTimestamp && (msgString.length() < 13 || !CHROMIUM$TIMESTAMP_PATTERN.matcher(msgString.substring(0, 13)).find())) {
+        if (ChromiumMod.config().showTimestamp && (msgString.length() < 13 || !CHROMIUM$TIMESTAMP_PATTERN.matcher(msgString.substring(0, 13)).find())) {
             final var hoverText = Text.translatable(Formatting.YELLOW + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss ").format(new Date()) + TimeZone.getDefault().getID());
             final var timeText = Text.translatable(Formatting.GRAY + new SimpleDateFormat("[HH:mm:ss] ").format(new Date()) + Formatting.RESET).styled(
                     (style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText))));
@@ -93,7 +93,7 @@ public abstract class ChatHudMixin {
             ),
             index = 1)
     private float chromium$applyYOffset(float y) {
-        if (!ChromiumMod.getConfig().messageAnimations) return y;
+        if (!ChromiumMod.config().messageAnimations) return y;
         chromium$calculateYOffset();
 
         return y + chromium$chatDisplacementY;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -9,7 +9,8 @@ package me.denarydev.chromium.client.dummy;
 
 import com.mojang.datafixers.util.Either;
 import me.denarydev.chromium.ChromiumMod;
-import net.minecraft.client.MinecraftClient;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -29,7 +30,8 @@ import java.util.OptionalLong;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class DummyClientWorld extends ClientWorld {
+@Environment(EnvType.CLIENT)
+public final class DummyClientWorld extends ClientWorld {
 
     private static DummyClientWorld instance;
 
@@ -43,7 +45,7 @@ public class DummyClientWorld extends ClientWorld {
     }
 
     private DummyClientWorld() {
-        super(DummyClientPlayNetworkHandler.getInstance(), new Properties(Difficulty.PEACEFUL, false, true), WORLD_KEY, new DummyDirect<>(DUMMY_TYPE_KEY, DUMMY), 0, 0, () -> MinecraftClient.getInstance().getProfiler(), null, false, 0);
+        super(DummyClientPlayNetworkHandler.getInstance(), new Properties(Difficulty.PEACEFUL, false, true), WORLD_KEY, new DummyDirect<>(DUMMY_TYPE_KEY, DUMMY), 0, 0, null, false, 0, 0);
     }
 
     private record DummyDirect<T>(RegistryKey<T> key, T value) implements RegistryEntry<T> {

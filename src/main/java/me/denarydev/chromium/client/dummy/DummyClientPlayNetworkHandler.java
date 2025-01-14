@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -8,6 +8,8 @@
 package me.denarydev.chromium.client.dummy;
 
 import com.mojang.serialization.Lifecycle;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientConnectionState;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -20,6 +22,8 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.damage.DeathMessageType;
 import net.minecraft.entity.passive.WolfVariant;
 import net.minecraft.entity.passive.WolfVariants;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -45,7 +49,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
+@Environment(EnvType.CLIENT)
+public final class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
 
     private static DummyClientPlayNetworkHandler instance;
 
@@ -54,13 +59,11 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         return instance;
     }
 
-    private final DynamicRegistryManager dummyRegistryManager;
-    private final DummyPlayerListEntry dummyPlayerListEntry;
+    private static final DynamicRegistryManager dummyRegistryManager = dummyRegistryManager();
+    private final DummyPlayerListEntry dummyPlayerListEntry = new DummyPlayerListEntry();
 
     private DummyClientPlayNetworkHandler() {
-        super(MinecraftClient.getInstance(), new ClientConnection(NetworkSide.CLIENTBOUND), new ClientConnectionState(MinecraftClient.getInstance().getGameProfile(), null, null, FeatureSet.of(FeatureFlags.VANILLA), null, null, null, null, null, false, null, null));
-        this.dummyRegistryManager = dummyRegistryManager();
-        this.dummyPlayerListEntry = new DummyPlayerListEntry();
+        super(MinecraftClient.getInstance(), new ClientConnection(NetworkSide.CLIENTBOUND), new ClientConnectionState(MinecraftClient.getInstance().getGameProfile(), null, dummyRegistryManager.toImmutable(), FeatureSet.of(FeatureFlags.VANILLA), null, null, null, null, null, null, null));
     }
 
     @NotNull
@@ -75,18 +78,28 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         return dummyPlayerListEntry;
     }
 
-    private DynamicRegistryManager dummyRegistryManager() {
+    private static DynamicRegistryManager dummyRegistryManager() {
         final var registries = new ArrayList<Registry<?>>();
 
         registries.add(dummyDamageTypesRegistry());
         registries.add(dummyBiomesRegistry());
         registries.add(dummyWolfVariantsRegistry());
+        registries.add(dummyItemRegistry());
 
         return new DynamicRegistryManager.ImmutableImpl(registries);
     }
 
     @NotNull
-    private Registry<DamageType> dummyDamageTypesRegistry() {
+    private static Registry<Item> dummyItemRegistry() {
+        final var registry = new SimpleRegistry<>(RegistryKeys.ITEM, Lifecycle.stable(), false);
+
+        registry.add(RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("air")), Items.AIR, RegistryEntryInfo.DEFAULT);
+
+        return registry;
+    }
+
+    @NotNull
+    private static Registry<DamageType> dummyDamageTypesRegistry() {
         final var registry = new SimpleRegistry<>(RegistryKeys.DAMAGE_TYPE, Lifecycle.stable(), false);
 
         registry.add(DamageTypes.IN_FIRE, new DamageType("inFire", 0.1F, DamageEffects.BURNING), RegistryEntryInfo.DEFAULT);
@@ -101,6 +114,7 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         registry.add(DamageTypes.STARVE, new DamageType("starve", 0), RegistryEntryInfo.DEFAULT);
         registry.add(DamageTypes.CACTUS, new DamageType("cactus", 0.1F), RegistryEntryInfo.DEFAULT);
         registry.add(DamageTypes.FALL, new DamageType("fall", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0, DamageEffects.HURT, DeathMessageType.FALL_VARIANTS), RegistryEntryInfo.DEFAULT);
+        registry.add(DamageTypes.ENDER_PEARL, new DamageType("fall", DamageScaling.WHEN_CAUSED_BY_LIVING_NON_PLAYER, 0.0F, DamageEffects.HURT, DeathMessageType.FALL_VARIANTS), RegistryEntryInfo.DEFAULT);
         registry.add(DamageTypes.FLY_INTO_WALL, new DamageType("flyIntoWall", 0), RegistryEntryInfo.DEFAULT);
         registry.add(DamageTypes.OUT_OF_WORLD, new DamageType("outOfWorld", 0), RegistryEntryInfo.DEFAULT);
         registry.add(DamageTypes.GENERIC, new DamageType("generic", 0), RegistryEntryInfo.DEFAULT);
@@ -136,11 +150,13 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         registry.add(DamageTypes.OUTSIDE_BORDER, new DamageType("outsideBorder", 0), RegistryEntryInfo.DEFAULT);
         registry.add(DamageTypes.GENERIC_KILL, new DamageType("genericKill", 0), RegistryEntryInfo.DEFAULT);
         registry.add(DamageTypes.WIND_CHARGE, new DamageType("mob", 0.1F), RegistryEntryInfo.DEFAULT);
+        registry.add(DamageTypes.MACE_SMASH, new DamageType("maceSmash", 0.1F), RegistryEntryInfo.DEFAULT);
 
         return registry;
     }
 
-    private static @NotNull SimpleRegistry<Biome> dummyBiomesRegistry() {
+    @NotNull
+    private static SimpleRegistry<Biome> dummyBiomesRegistry() {
         final var registry = new SimpleRegistry<>(RegistryKeys.BIOME, Lifecycle.stable(), false);
 
         final var fakePlains = new Biome.Builder()
@@ -159,7 +175,8 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         return registry;
     }
 
-    private Registry<WolfVariant> dummyWolfVariantsRegistry() {
+    @NotNull
+    private static Registry<WolfVariant> dummyWolfVariantsRegistry() {
         final var registry = new SimpleRegistry<>(RegistryKeys.WOLF_VARIANT, Lifecycle.stable(), false);
         registerWolfVariant(registry, WolfVariants.PALE, "wolf");
         registerWolfVariant(registry, WolfVariants.SPOTTED, "wolf_spotted");
@@ -174,7 +191,7 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         return registry;
     }
 
-    private void registerWolfVariant(SimpleRegistry<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName) {
+    private static void registerWolfVariant(SimpleRegistry<WolfVariant> registry, RegistryKey<WolfVariant> key, String textureName) {
         Identifier identifier = Identifier.ofVanilla("entity/wolf/" + textureName);
         Identifier identifier2 = Identifier.ofVanilla("entity/wolf/" + textureName + "_tame");
         Identifier identifier3 = Identifier.ofVanilla("entity/wolf/" + textureName + "_angry");
@@ -182,7 +199,7 @@ public class DummyClientPlayNetworkHandler extends ClientPlayNetworkHandler {
     }
 
     public RegistryEntry<WolfVariant> randomWolfVariant() {
-        final var registry = getRegistryManager().get(RegistryKeys.WOLF_VARIANT);
+        final var registry = getRegistryManager().getOrThrow(RegistryKeys.WOLF_VARIANT);
         final int index = ThreadLocalRandom.current().nextInt(0, 9);
         return registry.getEntry(index).orElse(null);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -7,7 +7,7 @@
  */
 package me.denarydev.chromium.client.compat.sodium.mixin.gui;
 
-import me.jellysquid.mods.sodium.client.gui.options.control.ControlValueFormatter;
+import net.caffeinemc.mods.sodium.client.gui.options.control.ControlValueFormatter;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;

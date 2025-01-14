@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -8,12 +8,12 @@
 package me.denarydev.chromium.client;
 
 import com.google.common.io.Files;
-import lombok.Getter;
 import me.denarydev.chromium.ChromiumMod;
-import me.denarydev.chromium.client.dummy.DummyClientWorld;
 import me.denarydev.chromium.client.gui.OptionsScreenBuilder;
 import me.denarydev.chromium.client.network.ChromiumHelloCustomPayload;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
@@ -21,22 +21,17 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworkin
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Random;
 
-public class ChromiumClientMod implements ClientModInitializer {
+@Environment(EnvType.CLIENT)
+public final class ChromiumClientMod implements ClientModInitializer {
 
     private KeyBinding configKey;
 
@@ -44,19 +39,23 @@ public class ChromiumClientMod implements ClientModInitializer {
     public void onInitializeClient() {
         if (Boolean.getBoolean("chromium.killmclauncher") && Util.getOperatingSystem().equals(Util.OperatingSystem.WINDOWS)) {
             try {
-                Runtime.getRuntime().exec("taskkill /F /IM Minecraft.exe");
+                new ProcessBuilder("taskkill", "/F", "/IM", "Minecraft.exe").start();
             } catch (IOException e) {
                 ChromiumMod.LOGGER.error("Failed to kill minecraft launcher", e);
             }
         }
+
+        registerKeybinds();
+        initializeClientEvents();
+    }
+
+    private void registerKeybinds() {
         configKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.chromium.config",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
-                "key.chromium.category"
+                "Chromium"
         ));
-
-        initializeClientEvents();
     }
 
     private void initializeClientEvents() {
@@ -64,11 +63,11 @@ public class ChromiumClientMod implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (configKey.isPressed()) {
-                client.setScreen(OptionsScreenBuilder.build());
+                client.setScreen(new OptionsScreenBuilder(ChromiumMod.config()).createScreen(null));
             }
         });
         ScreenEvents.BEFORE_INIT.register(((client, screen, scaledWidth, scaledHeight) -> {
-            if (screen instanceof TitleScreen) updateRandomEntity();
+            //if (screen instanceof TitleScreen) RandomEntity.update();
         }));
 
         initializeClientConnectionEvents();
@@ -77,7 +76,7 @@ public class ChromiumClientMod implements ClientModInitializer {
     @SuppressWarnings("DataFlowIssue")
     private void initializeClientConnectionEvents() {
         ClientPlayConnectionEvents.JOIN.register(((handler, sender, client) -> {
-            final var continueInfo = ChromiumMod.getConfig().continueInfo;
+            final var continueInfo = ChromiumMod.config().continueInfo;
             if (client.isIntegratedServerRunning()) {
                 continueInfo.local = true;
                 final var levelName = client.getServer().getSaveProperties().getLevelName();
@@ -91,7 +90,7 @@ public class ChromiumClientMod implements ClientModInitializer {
                 continueInfo.lastName = serverInfo.name;
                 continueInfo.lastAddress = serverInfo.address;
             }
-            ChromiumMod.getConfigManager().writeConfig(true);
+            ChromiumMod.configManager().writeConfig(true);
         }));
     }
 
@@ -100,18 +99,5 @@ public class ChromiumClientMod implements ClientModInitializer {
 
         ClientConfigurationConnectionEvents.COMPLETE.register((handler, client) ->
                 ClientConfigurationNetworking.send(new ChromiumHelloCustomPayload()));
-    }
-
-    private static final Random RANDOM = new Random();
-    @Getter
-    private static LivingEntity randomEntity;
-
-    public static void updateRandomEntity() {
-        final var entities = Registries.ENTITY_TYPE.stream()
-                .filter(e -> e.getSpawnGroup() != SpawnGroup.MISC)
-                .filter(e -> e != EntityType.ENDER_DRAGON && e != EntityType.WITHER)
-                .toList();
-        final var entity = entities.get(RANDOM.nextInt(entities.size())).create(DummyClientWorld.getInstance());
-        if (entity instanceof LivingEntity livingEntity) randomEntity = livingEntity;
     }
 }

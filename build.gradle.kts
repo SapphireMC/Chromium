@@ -4,17 +4,19 @@ plugins {
     alias(libs.plugins.loom)
 }
 
-val archivesBaseName = project.properties["archivesBaseName"].toString() + libs.versions.minecraft.get()
 val sodiumCompatibility = project.properties["sodiumCompatibility"].toString().toBoolean()
-val irisCompatibility = project.properties["irisCompatibility"].toString().toBoolean()
+
+base {
+    archivesName = "Chromium-mc${libs.versions.minecraft.get()}"
+}
 
 repositories {
     mavenCentral()
-    maven("https://maven.shedaniel.me/")
-    maven("https://maven.terraformersmc.com/releases/")
-    maven("https://maven.gegy.dev/")
-    maven("https://maven.parchmentmc.org")
+    maven("https://maven.shedaniel.me/") { name = "Shedaniel Maven" }
+    maven("https://maven.terraformersmc.com/releases/") { name = "TerraformersMC" }
+    maven("https://maven.isxander.dev/releases") { name = "Xander Maven" }
     maven("https://api.modrinth.com/maven/") {
+        name = "Modrinth"
         content {
             includeGroup("maven.modrinth")
         }
@@ -25,38 +27,25 @@ dependencies {
     minecraft(libs.minecraft)
     mappings(variantOf(libs.fabric.yarn) { classifier("v2") })
     modImplementation(libs.fabric.loader)
-    listOf(
-        "fabric-key-binding-api-v1",
-        "fabric-lifecycle-events-v1",
-        "fabric-networking-api-v1",
-        "fabric-screen-api-v1"
-    ).forEach {
-        modImplementation(fabricApi.module(it, libs.versions.fabric.get()))
+    modImplementation(libs.fabric.api)
+
+    modImplementation(libs.mod.modmenu)
+    modImplementation(libs.mod.yacl) {
+        // was including old fapi version that broke things at runtime
+        exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
     }
 
     if (sodiumCompatibility) {
         modImplementation(libs.mod.sodium)
     }
-    if (irisCompatibility) {
-        modImplementation(libs.mod.iris)
-        runtimeOnly(libs.jccp)
-        runtimeOnly(libs.glsl)
-    }
-    modImplementation(libs.mod.modmenu)
-    modImplementation(libs.mod.clothconfig) {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
-
-    modRuntimeOnly(libs.fabric.api)
-
-    compileOnly(libs.lombok)
-    annotationProcessor(libs.lombok)
 }
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 loom {
@@ -72,22 +61,11 @@ sourceSets {
             }
         }
     }
-    if (irisCompatibility) {
-        create("irisCompatibility") {
-            java {
-                compileClasspath += main.get().compileClasspath
-                compileClasspath += main.get().output
-            }
-        }
-    }
 
     main {
         java {
             if (sodiumCompatibility) {
                 runtimeClasspath += getByName("sodiumCompatibility").output
-            }
-            if (irisCompatibility) {
-                runtimeClasspath += getByName("irisCompatibility").output
             }
         }
     }
@@ -107,14 +85,6 @@ tasks {
         filteringCharset = Charsets.UTF_8.name()
     }
 
-    withType<Jar> {
-        archiveBaseName.set(archivesBaseName)
-    }
-
-    remapJar {
-        archiveBaseName.set(archivesBaseName)
-    }
-
     processResources {
         inputs.property("version", project.version)
 
@@ -126,18 +96,10 @@ tasks {
                     it.replace("mixins.chromium.compat.sodium.json", "mixins.empty.sodium.json")
                 }
             }
-            if (!irisCompatibility) {
-                filter {
-                    it.replace("mixins.chromium.compat.iris.json", "mixins.empty.iris.json")
-                }
-            }
         }
 
         if (sodiumCompatibility) {
             exclude("mixins.empty.sodium.json")
-        }
-        if (irisCompatibility) {
-            exclude("mixins.empty.iris.json")
         }
     }
 
@@ -148,13 +110,6 @@ tasks {
             from(sourceSets["sodiumCompatibility"].output) {
                 filesMatching("*refmap.json") {
                     name = "chromium-sodium-compat-refmap.json"
-                }
-            }
-        }
-        if (irisCompatibility) {
-            from(sourceSets["irisCompatibility"].output) {
-                filesMatching("*refmap.json") {
-                    name = "chromium-iris-compat-refmap.json"
                 }
             }
         }

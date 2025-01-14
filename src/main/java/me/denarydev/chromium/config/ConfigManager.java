@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -9,7 +9,6 @@ package me.denarydev.chromium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.Getter;
 import me.denarydev.chromium.ChromiumMod;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
@@ -19,9 +18,8 @@ import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class ConfigManager {
+public final class ConfigManager {
 
-    @Getter
     private ChromiumConfig config;
 
     private final Gson gson;
@@ -32,7 +30,10 @@ public class ConfigManager {
     public ConfigManager() {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.configFile = new File(FabricLoader.getInstance().getConfigDir().toString() + File.separator + ChromiumMod.MOD_ID, "settings.json");
-        readConfig(false);
+    }
+
+    public ChromiumConfig getConfig() {
+        return config;
     }
 
     public void readConfig(boolean async) {

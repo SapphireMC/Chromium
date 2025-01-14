@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -7,13 +7,16 @@
  */
 package me.denarydev.chromium.client.dummy;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.player.PlayerModelPart;
 import org.jetbrains.annotations.Nullable;
 
-public class DummyClientPlayerEntity extends ClientPlayerEntity {
+@Environment(EnvType.CLIENT)
+public final class DummyClientPlayerEntity extends ClientPlayerEntity {
     private static DummyClientPlayerEntity instance;
 
     public static DummyClientPlayerEntity getInstance() {

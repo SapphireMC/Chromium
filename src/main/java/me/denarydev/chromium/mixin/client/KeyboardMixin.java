@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -22,8 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Keyboard.class)
 public abstract class KeyboardMixin {
 
-    @Shadow @Final private MinecraftClient client;
-    @Unique private int cachedKey = 0;
+    @Shadow
+    @Final
+    private MinecraftClient client;
+    @Unique
+    private int cachedKey = 0;
 
     @Inject(method = "processF3", at = @At("HEAD"))
     private void chromium$cacheKey(int key, CallbackInfoReturnable<Boolean> cir) {

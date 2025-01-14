@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -7,233 +7,270 @@
  */
 package me.denarydev.chromium.client.gui;
 
+import dev.isxander.yacl3.api.ButtonOption;
+import dev.isxander.yacl3.api.ConfigCategory;
+import dev.isxander.yacl3.api.Option;
+import dev.isxander.yacl3.api.OptionDescription;
+import dev.isxander.yacl3.api.OptionGroup;
+import dev.isxander.yacl3.api.YetAnotherConfigLib;
+import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
+import dev.isxander.yacl3.api.controller.IntegerFieldControllerBuilder;
+import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import me.denarydev.chromium.ChromiumMod;
 import me.denarydev.chromium.config.ChromiumConfig;
 import me.denarydev.chromium.util.ColorUtils;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import net.minecraft.client.MinecraftClient;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 
+import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.function.Function;
 
-public class OptionsScreenBuilder {
+/**
+ * @author DenaryDev
+ * @since 15:47 13.01.2025
+ */
+@Environment(EnvType.CLIENT)
+public final class OptionsScreenBuilder {
+    private final ChromiumConfig currentConfig;
+    private final ChromiumConfig defaultConfig = new ChromiumConfig();
 
-    private static final Function<Boolean, Text> yesNoSupplier = bool -> {
-        if (bool) return Text.translatable("label.chromium.on");
-        else return Text.translatable("label.chromium.off");
-    };
-
-    public static Screen build() {
-        final var client = MinecraftClient.getInstance();
-        final var defaults = new ChromiumConfig();
-        final var current = ChromiumMod.getConfig();
-
-        final var builder = ConfigBuilder.create()
-                .setParentScreen(client.currentScreen)
-                .setTitle(Text.translatable("title.chromium.config"))
-                .transparentBackground()
-                .setDoesConfirmSave(true)
-                .setSavingRunnable(() -> ChromiumMod.getConfigManager().writeConfig(true));
-
-        final var entryBuilder = builder.entryBuilder();
-        final var category = builder.getOrCreateCategory(Text.translatable("category.chromium.general"));
-
-        /*========================= Info panel settings =========================*/
-        final var toggleShowFps = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.showFps"), current.showFps)
-                .setDefaultValue(defaults.showFps)
-                .setTooltip(getTooltip("options.chromium.showFps"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().showFps = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var toggleShowTime = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.showTime"), current.showTime)
-                .setDefaultValue(defaults.showTime)
-                .setTooltip(getTooltip("options.chromium.showTime"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().showTime = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var toggleShowCoords = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.showCoords"), current.showCoords)
-                .setDefaultValue(defaults.showCoords)
-                .setTooltip(getTooltip("options.chromium.showCoords"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().showCoords = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var toggleShowLight = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.showLight"), current.showLight)
-                .setDefaultValue(defaults.showLight)
-                .setTooltip(getTooltip("options.chromium.showLight"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().showLight = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var toggleShowBiome = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.showBiome"), current.showBiome)
-                .setDefaultValue(defaults.showBiome)
-                .setTooltip(getTooltip("options.chromium.showBiome"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().showBiome = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-
-        /*========================= Chat settings =========================*/
-        final var toggleMessagesTime = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.showMessagesTime"), current.showTimestamp)
-                .setDefaultValue(defaults.showTimestamp)
-                .setTooltip(getTooltip("options.chromium.showMessagesTime"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().showTimestamp = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var maxMessages = entryBuilder.startIntField(Text.translatable("options.chromium.maxMessages"), current.messagesHistorySize)
-                .setDefaultValue(defaults.messagesHistorySize)
-                .setMin(50).setMax(32767)
-                .setTooltip(getTooltip("options.chromium.maxMessages"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().messagesHistorySize = it)
-                .build();
-        final var toggleMessageAnimations = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.messageAnimations"), current.messageAnimations)
-                .setDefaultValue(defaults.messageAnimations)
-                .setTooltip(getTooltip("options.chromium.messageAnimations"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().messageAnimations = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-
-        /*========================= Tablist settings =========================*/
-        final var toggleShowPingAmount = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.showPingAmount"), current.showPingAmount)
-                .setDefaultValue(defaults.showPingAmount)
-                .setTooltip(getTooltip("options.chromium.showPingAmount"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().showPingAmount = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var renderPingBars = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.replacePingBars"), current.replacePingBars)
-                .setDefaultValue(defaults.replacePingBars)
-                .setTooltip(getTooltip("options.chromium.replacePingBars"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().replacePingBars = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var pingAmountAutoColor = entryBuilder.startBooleanToggle(Text.translatable("options.chromium.pingAmountAutoColor"), current.pingAmountAutoColor)
-                .setDefaultValue(defaults.pingAmountAutoColor)
-                .setTooltip(getTooltip("options.chromium.pingAmountAutoColor"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().pingAmountAutoColor = it)
-                .setYesNoTextSupplier(yesNoSupplier)
-                .build();
-        final var pingAmountColor = entryBuilder.startColorField(Text.translatable("options.chromium.pingAmountColor"), ColorUtils.fromHex(current.pingAmountColor))
-                .setDefaultValue(ColorUtils.fromHex(defaults.pingAmountColor))
-                .setTooltip(getTooltip("options.chromium.pingAmountColor"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().pingAmountColor = ColorUtils.toHex(it))
-                .build();
-        final var pingAmountFormat = entryBuilder.startTextField(Text.translatable("options.chromium.pingAmountFormat"), current.pingAmountFormat)
-                .setDefaultValue(defaults.pingAmountFormat)
-                .setTooltip(getTooltip("options.chromium.pingAmountFormat"))
-                .setErrorSupplier(it -> {
-                    if (!it.contains("<num>")) return Optional.of(Text.translatable("options.chromium.pingAmountFormat.invalid"));
-                    else return Optional.empty();
-                })
-                .setSaveConsumer(it -> ChromiumMod.getConfig().pingAmountFormat = it)
-                .build();
-
-        /*========================= Tile entities rendeding settings =========================*/
-        final var bannerRenderDistance = entryBuilder.startIntField(Text.translatable("options.chromium.render.te.bannerRenderDistance"), current.bannerRenderDistance)
-                .setDefaultValue(defaults.bannerRenderDistance)
-                .setMin(16).setMax(1024)
-                .setTooltip(getTooltip("options.chromium.render.te.bannerRenderDistance"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().bannerRenderDistance = it)
-                .build();
-
-        final var chestRenderDistance = entryBuilder.startIntField(Text.translatable("options.chromium.render.te.chestRenderDistance"), current.chestRenderDistance)
-                .setDefaultValue(defaults.chestRenderDistance)
-                .setMin(16).setMax(1024)
-                .setTooltip(getTooltip("options.chromium.render.te.chestRenderDistance"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().chestRenderDistance = it)
-                .build();
-
-        final var shulkerBoxRenderDistance = entryBuilder.startIntField(Text.translatable("options.chromium.render.te.shulkerBoxRenderDistance"), current.shulkerBoxRenderDistance)
-                .setDefaultValue(defaults.shulkerBoxRenderDistance)
-                .setMin(16).setMax(1024)
-                .setTooltip(getTooltip("options.chromium.render.te.shulkerBoxRenderDistance"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().shulkerBoxRenderDistance = it)
-                .build();
-        final var signRenderDistance = entryBuilder.startIntField(Text.translatable("options.chromium.render.te.signRenderDistance"), current.signRenderDistance)
-                .setDefaultValue(defaults.signRenderDistance)
-                .setMin(16).setMax(1024)
-                .setTooltip(getTooltip("options.chromium.render.te.signRenderDistance"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().signRenderDistance = it)
-                .build();
-        final var skullRenderDistance = entryBuilder.startIntField(Text.translatable("options.chromium.render.te.skullRenderDistance"), current.skullRenderDistance)
-                .setDefaultValue(defaults.skullRenderDistance)
-                .setMin(16).setMax(1024)
-                .setTooltip(getTooltip("options.chromium.render.te.skullRenderDistance"))
-                .setSaveConsumer(it -> ChromiumMod.getConfig().skullRenderDistance = it)
-                .build();
-
-        /*========================= Hopper settings =========================*/
-//        final var hopperTransfer = entryBuilder.startIntField(Text.translatable("options.chromium.mechanics.hopperTransfer"), current.hopperTransfer)
-//                .setDefaultValue(defaults.hopperTransfer)
-//                .setMin(2).setMax(200)
-//                .setTooltip(getTooltip("options.chromium.mechanics.hopperTransfer"))
-//                .setSaveConsumer(it -> ChromiumMod.getConfig().hopperTransfer = it)
-//                .build();
-//        final var hopperAmount = entryBuilder.startIntField(Text.translatable("options.chromium.mechanics.hopperAmount"), current.hopperAmount)
-//                .setDefaultValue(defaults.hopperAmount)
-//                .setMin(1).setMax(64)
-//                .setTooltip(getTooltip("options.chromium.mechanics.hopperAmount"))
-//                .setSaveConsumer(it -> ChromiumMod.getConfig().hopperAmount = it)
-//                .build();
-
-        final var infoBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.info"));
-        infoBuilder.add(toggleShowFps);
-        infoBuilder.add(toggleShowTime);
-        infoBuilder.add(toggleShowCoords);
-        infoBuilder.add(toggleShowLight);
-        infoBuilder.add(toggleShowBiome);
-
-        final var chatBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.chat"));
-        chatBuilder.add(toggleMessagesTime);
-        chatBuilder.add(maxMessages);
-        chatBuilder.add(toggleMessageAnimations);
-        
-        final var tablistBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.tablist"));
-        tablistBuilder.add(toggleShowPingAmount);
-        tablistBuilder.add(renderPingBars);
-        tablistBuilder.add(pingAmountAutoColor);
-        tablistBuilder.add(pingAmountColor);
-        tablistBuilder.add(pingAmountFormat);
-
-        final var renderBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.render"));
-
-        final var teBuider = entryBuilder.startSubCategory(Text.translatable("category.chromium.render.te"));
-        teBuider.add(bannerRenderDistance);
-        teBuider.add(chestRenderDistance);
-        teBuider.add(shulkerBoxRenderDistance);
-        teBuider.add(signRenderDistance);
-        teBuider.add(skullRenderDistance);
-        renderBuilder.add(teBuider.build());
-
-//        final var mechanicsBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.mechanics"));
-//
-//        final var hopperBuilder = entryBuilder.startSubCategory(Text.translatable("category.chromium.mechanics.hopper"));
-//        hopperBuilder.add(hopperTransfer);
-//        hopperBuilder.add(hopperAmount);
-//        hopperBuilder.setExpanded(true);
-//        mechanicsBuilder.add(hopperBuilder.build());
-
-        category.addEntry(infoBuilder.build());
-        category.addEntry(chatBuilder.build());
-        category.addEntry(tablistBuilder.build());
-        category.addEntry(renderBuilder.build());
-//        category.addEntry(mechanicsBuilder.build());
-
-        return builder.build();
+    public OptionsScreenBuilder(final ChromiumConfig currentConfig) {
+        this.currentConfig = currentConfig;
     }
 
-    private static Text[] getTooltip(String key) {
+    public Screen createScreen(final Screen parent) {
+        return YetAnotherConfigLib.createBuilder()
+                .title(Text.translatable("screen.chromium.settings"))
+                .category(ConfigCategory.createBuilder()
+                        .name(Text.translatable("options.chromium.category.inGame"))
+                        .group(infoPanel())
+                        .group(tabList())
+                        .group(chat())
+                        .build())
+                .category(ConfigCategory.createBuilder()
+                        .name(Text.translatable("options.chromium.category.screens"))
+                        .group(titleScreen())
+                        .build())
+                .category(ConfigCategory.createBuilder()
+                        .name(Text.translatable("options.chromium.category.entities"))
+                        .group(tileEntitiesViewDistance())
+                        .build())
+                .save(() -> ChromiumMod.configManager().writeConfig(true))
+                .build()
+                .generateScreen(parent);
+    }
+
+    private OptionGroup infoPanel() {
+        return OptionGroup.createBuilder()
+                .name(Text.translatable("options.chromium.group.info"))
+                .description(description("options.chromium.group.info"))
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.showFps"))
+                        .description(description("options.chromium.showFps"))
+                        .binding(defaultConfig.showFps, () -> currentConfig.showFps, it -> ChromiumMod.config().showFps = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.showTime"))
+                        .description(description("options.chromium.showTime"))
+                        .binding(defaultConfig.showTime, () -> currentConfig.showTime, it -> ChromiumMod.config().showTime = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.showCoords"))
+                        .description(description("options.chromium.showCoords"))
+                        .binding(defaultConfig.showCoords, () -> currentConfig.showCoords, it -> ChromiumMod.config().showCoords = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.showLight"))
+                        .description(description("options.chromium.showLight"))
+                        .binding(defaultConfig.showLight, () -> currentConfig.showLight, it -> ChromiumMod.config().showLight = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.showBiome"))
+                        .description(description("options.chromium.showBiome"))
+                        .binding(defaultConfig.showBiome, () -> currentConfig.showBiome, it -> ChromiumMod.config().showBiome = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .build();
+    }
+
+    private OptionGroup chat() {
+        return OptionGroup.createBuilder()
+                .name(Text.translatable("options.chromium.group.chat"))
+                .description(description("options.chromium.group.chat"))
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.showMessagesTime"))
+                        .description(description("options.chromium.showMessagesTime"))
+                        .binding(defaultConfig.showTimestamp, () -> currentConfig.showTimestamp, it -> ChromiumMod.config().showTimestamp = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.messageAnimations"))
+                        .description(description("options.chromium.messageAnimations"))
+                        .binding(defaultConfig.messageAnimations, () -> currentConfig.messageAnimations, it -> ChromiumMod.config().messageAnimations = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Integer>createBuilder()
+                        .name(Text.translatable("options.chromium.maxMessages"))
+                        .description(description("options.chromium.maxMessages"))
+                        .binding(defaultConfig.messagesHistorySize, () -> currentConfig.messagesHistorySize, it -> ChromiumMod.config().messagesHistorySize = it)
+                        .controller(option ->
+                                IntegerFieldControllerBuilder.create(option)
+                                        .min(50)
+                                        .max(32000))
+                        .build())
+                .build();
+    }
+
+    private OptionGroup tabList() {
+        return OptionGroup.createBuilder()
+                .name(Text.translatable("options.chromium.group.tabList"))
+                .description(description("options.chromium.group.tabList"))
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.showPingAmount"))
+                        .description(description("options.chromium.showPingAmount"))
+                        .binding(defaultConfig.showPingAmount, () -> currentConfig.showPingAmount, it -> ChromiumMod.config().showPingAmount = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.replacePingBars"))
+                        .description(description("options.chromium.replacePingBars"))
+                        .binding(defaultConfig.replacePingBars, () -> currentConfig.replacePingBars, it -> ChromiumMod.config().replacePingBars = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.pingAmountAutoColor"))
+                        .description(description("options.chromium.pingAmountAutoColor"))
+                        .binding(defaultConfig.pingAmountAutoColor, () -> currentConfig.pingAmountAutoColor, it -> ChromiumMod.config().pingAmountAutoColor = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(Option.<Color>createBuilder()
+                        .name(Text.translatable("options.chromium.pingAmountColor"))
+                        .description(description("options.chromium.pingAmountColor"))
+                        .binding(Color.decode(defaultConfig.pingAmountColor), () -> Color.decode(currentConfig.pingAmountColor), it -> ChromiumMod.config().pingAmountColor = ColorUtils.toHex(it.getRGB()))
+                        .controller(ColorControllerBuilder::create)
+                        .build())
+                .build();
+    }
+
+    private OptionGroup titleScreen() {
+        return OptionGroup.createBuilder()
+                .name(Text.translatable("options.chromium.group.titleScreen"))
+                .description(description("options.chromium.group.titleScreen"))
+                .option(Option.<Boolean>createBuilder()
+                        .name(Text.translatable("options.chromium.continueButtonEnabled"))
+                        .description(description("options.chromium.continueButtonEnabled"))
+                        .binding(defaultConfig.continueButtonEnabled, () -> currentConfig.continueButtonEnabled, it -> ChromiumMod.config().continueButtonEnabled = it)
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
+                .option(ButtonOption.createBuilder()
+                        .name(Text.translatable("options.chromium.clearContinueInfo"))
+                        .description(description("options.chromium.clearContinueInfo"))
+                        .action(((screen, option) -> ChromiumMod.config().continueInfo = new ChromiumConfig.ContinueInfo()))
+                        .build())
+                .build();
+    }
+
+    private OptionGroup tileEntitiesViewDistance() {
+        return OptionGroup.createBuilder()
+                .name(Text.translatable("options.chromium.group.teViewDistance"))
+                .description(description("options.chromium.group.teViewDistance"))
+                .option(Option.<Integer>createBuilder()
+                        .name(Text.translatable("options.chromium.render.te.bannerRenderDistance"))
+                        .description(description("options.chromium.render.te.bannerRenderDistance"))
+                        .binding(defaultConfig.bannerRenderDistance, () -> currentConfig.bannerRenderDistance, it -> ChromiumMod.config().bannerRenderDistance = it)
+                        .controller(option ->
+                                IntegerSliderControllerBuilder.create(option)
+                                        .formatValue(integer -> Text.translatable("options.chunks", integer / 16))
+                                        .range(32, 512)
+                                        .step(16)
+                        )
+                        .build()
+                )
+                .option(Option.<Integer>createBuilder()
+                        .name(Text.translatable("options.chromium.render.te.chestRenderDistance"))
+                        .description(description("options.chromium.render.te.chestRenderDistance"))
+                        .binding(defaultConfig.chestRenderDistance, () -> currentConfig.chestRenderDistance, it -> ChromiumMod.config().chestRenderDistance = it)
+                        .controller(option ->
+                                IntegerSliderControllerBuilder.create(option)
+                                        .formatValue(integer -> Text.translatable("options.chunks", integer / 16))
+                                        .range(32, 512)
+                                        .step(16)
+                        )
+                        .build()
+                )
+                .option(Option.<Integer>createBuilder()
+                        .name(Text.translatable("options.chromium.render.te.shulkerBoxRenderDistance"))
+                        .description(description("options.chromium.render.te.shulkerBoxRenderDistance"))
+                        .binding(defaultConfig.shulkerBoxRenderDistance, () -> currentConfig.shulkerBoxRenderDistance, it -> ChromiumMod.config().shulkerBoxRenderDistance = it)
+                        .controller(option ->
+                                IntegerSliderControllerBuilder.create(option)
+                                        .formatValue(integer -> Text.translatable("options.chunks", integer / 16))
+                                        .range(32, 512)
+                                        .step(16)
+                        )
+                        .build()
+                )
+                .option(Option.<Integer>createBuilder()
+                        .name(Text.translatable("options.chromium.render.te.signRenderDistance"))
+                        .description(description("options.chromium.render.te.signRenderDistance"))
+                        .binding(defaultConfig.signRenderDistance, () -> currentConfig.signRenderDistance, it -> ChromiumMod.config().signRenderDistance = it)
+                        .controller(option ->
+                                IntegerSliderControllerBuilder.create(option)
+                                        .formatValue(integer -> Text.translatable("options.chunks", integer / 16))
+                                        .range(32, 512)
+                                        .step(16)
+                        )
+                        .build()
+                )
+                .option(Option.<Integer>createBuilder()
+                        .name(Text.translatable("options.chromium.render.te.hangingSignRenderDistance"))
+                        .description(description("options.chromium.render.te.hangingSignRenderDistance"))
+                        .binding(defaultConfig.hangingSignRenderDistance, () -> currentConfig.hangingSignRenderDistance, it -> ChromiumMod.config().hangingSignRenderDistance = it)
+                        .controller(option ->
+                                IntegerSliderControllerBuilder.create(option)
+                                        .formatValue(integer -> Text.translatable("options.chunks", integer / 16))
+                                        .range(32, 512)
+                                        .step(16)
+                        )
+                        .build()
+                )
+                .option(Option.<Integer>createBuilder()
+                        .name(Text.translatable("options.chromium.render.te.skullRenderDistance"))
+                        .description(description("options.chromium.render.te.skullRenderDistance"))
+                        .binding(defaultConfig.skullRenderDistance, () -> currentConfig.skullRenderDistance, it -> ChromiumMod.config().skullRenderDistance = it)
+                        .controller(option ->
+                                IntegerSliderControllerBuilder.create(option)
+                                        .formatValue(integer -> Text.translatable("options.chunks", integer / 16))
+                                        .range(32, 512)
+                                        .step(16)
+                        )
+                        .build()
+                )
+                .build();
+    }
+
+    @NotNull
+    private OptionDescription description(final String key) {
         final var list = new ArrayList<Text>();
 
         for (int i = 0; i < 10; i++) {
-            final var finalKey = key + ".tooltip." + (i + 1);
-            final var value = I18n.translate(finalKey);
+            final var finalKey = key + ".description." + (i + 1);
+            if (!I18n.hasTranslation(finalKey)) break;
 
-            if (value.equals(finalKey)) break;
+            final var value = I18n.translate(finalKey);
 
             list.add(Text.literal(value));
         }
 
-        return list.isEmpty() ? null : list.toArray(new Text[0]);
+        return list.isEmpty() ? OptionDescription.EMPTY : OptionDescription.of(list.toArray(new Text[0]));
     }
 }

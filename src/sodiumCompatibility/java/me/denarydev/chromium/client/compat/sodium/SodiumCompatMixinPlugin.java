@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -16,20 +16,17 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
-public class SodiumCompatMixinPlugin implements IMixinConfigPlugin {
-    private final List<AllowedSodiumVersion> allowedSodiumVersions = List.of(
-            new AllowedSodiumVersion("0.5.9"),
-            new AllowedSodiumVersion("0.5.11")
-    );
+public final class SodiumCompatMixinPlugin implements IMixinConfigPlugin {
+    private static final List<String> ALLOWED_VERSIONS = List.of("0.6");
     private boolean validSodiumVersion = false;
 
     @Override
     public void onLoad(String mixinPackage) {
         if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.SERVER)) return;
         validSodiumVersion = FabricLoader.getInstance().getModContainer("sodium").map(sodium -> {
-            String version = sodium.getMetadata().getVersion().getFriendlyString();
+            final var version = sodium.getMetadata().getVersion().getFriendlyString();
 
-            return isAllowedVersion(version);
+            return ALLOWED_VERSIONS.stream().anyMatch(version::startsWith);
         }).orElse(false);
 
         if (!validSodiumVersion) {
@@ -65,22 +62,5 @@ public class SodiumCompatMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 
-    }
-
-    private boolean isAllowedVersion(String version) {
-        for (AllowedSodiumVersion allowed : allowedSodiumVersions) {
-            if (allowed.matches(version)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private record AllowedSodiumVersion(String version) {
-
-        private boolean matches(String candidate) {
-                return candidate.startsWith(version);
-        }
     }
 }

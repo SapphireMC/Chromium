@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -7,14 +7,12 @@
  */
 package me.denarydev.chromium.mixin.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.denarydev.chromium.ChromiumMod;
-import me.denarydev.chromium.client.ChromiumClientMod;
 import me.denarydev.chromium.client.dummy.DummyClientPlayNetworkHandler;
 import me.denarydev.chromium.client.dummy.DummyClientPlayerEntity;
 import me.denarydev.chromium.client.gui.OptionsScreenBuilder;
+import me.denarydev.chromium.client.util.RandomEntity;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.QuickPlay;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -41,6 +39,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ public abstract class TitleScreenMixin extends Screen {
     @Inject(method = "init", at = @At("TAIL"))
     protected void chromium$addChromiumButtons(CallbackInfo ci) {
         assert this.client != null;
-        addDrawableChild(ButtonWidget.builder(Text.literal("S"), (element) -> this.client.setScreen(OptionsScreenBuilder.build()))
+        addDrawableChild(ButtonWidget.builder(Text.literal("S"), button -> this.client.setScreen(new OptionsScreenBuilder(ChromiumMod.config()).createScreen(this)))
                 .dimensions(this.width - 22, 2, 20, 20)
                 .build());
     }
@@ -79,6 +78,8 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void chromium$renderEntities(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (true) return; //TODO: Update this to 1.21.4
+
         final var player = DummyClientPlayerEntity.getInstance();
         final int height = this.height / 4 + 132;
         final int playerX = this.width / 2 - 160;
@@ -87,7 +88,7 @@ public abstract class TitleScreenMixin extends Screen {
         final float lookY = -mouseY + height - size;
         chromium$renderEntityFollowsMouse(context, playerX, height, playerLookX, lookY, player);
 
-        final var entity = ChromiumClientMod.getRandomEntity();
+        final var entity = RandomEntity.get();
         final int entityX = this.width / 2 + 160;
         final float entityLookX = -mouseX + entityX;
         if (entity != null) {
@@ -105,11 +106,11 @@ public abstract class TitleScreenMixin extends Screen {
         }
     }
 
-    @SuppressWarnings({"deprecation"})
     @Unique
     private void chromium$renderEntityFollowsMouse(DrawContext context, int x, int y, float lookX, float lookY, LivingEntity entity) {
         final float sideRot = (float) Math.atan(lookX / 200);
         final float upRot = (float) Math.atan(lookY / 200);
+        context.enableScissor(x, y, x + 16, y + 16);
         final var poseMultiplier = (new Quaternionf()).rotateZ((float) Math.PI);
         final float bodyYaw = entity.bodyYaw;
         final float yaw = entity.getYaw();
@@ -125,19 +126,20 @@ public abstract class TitleScreenMixin extends Screen {
         context.getMatrices().translate(x, y, 50);
         context.getMatrices().multiplyPositionMatrix((new Matrix4f()).scaling(SIZE, SIZE, -SIZE));
         context.getMatrices().multiply(poseMultiplier);
-        DiffuseLighting.enableGuiDepthLighting();
-        final var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+        DiffuseLighting.method_34742();
+        final var dispatcher = client.getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880));
+        context.draw((consumers) -> dispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, context.getMatrices(), consumers, 15728880));
         context.draw();
         dispatcher.setRenderShadows(true);
         context.getMatrices().pop();
-        DiffuseLighting.disableGuiDepthLighting();
+        DiffuseLighting.enableGuiDepthLighting();
         entity.bodyYaw = bodyYaw;
         entity.setYaw(yaw);
         entity.setPitch(pitch);
         entity.prevHeadYaw = prevHeadYaw;
         entity.headYaw = headYaw;
+        context.disableScissor();
     }
 
     // Continue button
@@ -152,17 +154,18 @@ public abstract class TitleScreenMixin extends Screen {
     @Unique
     private boolean continueButtonReadyToShow = false;
 
-    @Inject(at = @At("HEAD"), method = "initWidgetsNormal(II)V")
-    public void chromium$addContinueButton(int y, int spacingY, CallbackInfo info) {
-        if (!ChromiumMod.getConfig().continueButtonEnabled) return;
+    @SuppressWarnings("DataFlowIssue")
+    @Inject(at = @At("HEAD"), method = "addNormalWidgets")
+    public void chromium$addContinueButton(int y, int spacingY, CallbackInfoReturnable<Integer> cir) {
+        if (!ChromiumMod.config().continueButtonEnabled) return;
 
-        final var continueInfo = ChromiumMod.getConfig().continueInfo;
+        final var continueInfo = ChromiumMod.config().continueInfo;
         ButtonWidget.Builder continueButtonBuilder = ButtonWidget.builder(Text.translatable("button.chromium.continue"), button -> {
             if (continueInfo.local) {
                 if (!continueInfo.lastName.isBlank()) {
                     QuickPlay.startSingleplayer(this.client, continueInfo.lastAddress);
                 } else {
-                    CreateWorldScreen.create(this.client, this);
+                    CreateWorldScreen.show(this.client, this);
                 }
             } else {
                 QuickPlay.startMultiplayer(this.client, continueInfo.lastAddress);
@@ -180,6 +183,8 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(at = @At("TAIL"), method = "init()V")
     public void init(CallbackInfo info) {
+        if (!ChromiumMod.config().continueButtonEnabled) return;
+
         for (final var button : Screens.getButtons(this)) {
             if (button.visible && !button.getMessage().equals(Text.translatable("button.chromium.continue"))) {
                 button.setX(this.width / 2 + 2);
@@ -191,7 +196,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Unique
     private void chromium$atFirstRender() {
-        final var continueInfo = ChromiumMod.getConfig().continueInfo;
+        final var continueInfo = ChromiumMod.config().continueInfo;
         new Thread(() -> {
             if (!continueInfo.local) {
                 continueServerInfo = new ServerInfo(continueInfo.lastName, continueInfo.lastAddress, ServerInfo.ServerType.OTHER);
@@ -216,24 +221,27 @@ public abstract class TitleScreenMixin extends Screen {
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Inject(at = @At("TAIL"), method = "render")
     public void chromium$renderAtTail(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (!ChromiumMod.config().continueButtonEnabled) return;
+
         if (continueButtonWidget.isHovered() && this.continueButtonReadyToShow) {
-            final var continueInfo = ChromiumMod.getConfig().continueInfo;
+            final var continueInfo = ChromiumMod.config().continueInfo;
+            final ArrayList<OrderedText> list;
             if (continueInfo.local) {
-                final var list = new ArrayList<OrderedText>();
+                list = new ArrayList<>();
                 if (continueInfo.lastAddress.isEmpty()) {
                     list.add(Text.translatable("selectWorld.create").formatted(Formatting.GRAY).asOrderedText());
                 } else {
                     list.add(Text.translatable("menu.singleplayer").formatted(Formatting.GRAY).asOrderedText());
                     list.add(Text.literal(continueInfo.lastName).asOrderedText());
                 }
-                context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
             } else {
-                final var list = new ArrayList<>(this.client.textRenderer.wrapLines(continueServerInfo.label, 270));
+                list = new ArrayList<>(this.client.textRenderer.wrapLines(continueServerInfo.label, 270));
                 list.addFirst(Text.literal(continueServerInfo.name).formatted(Formatting.GRAY).asOrderedText());
-                context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
             }
+            context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
         }
     }
 

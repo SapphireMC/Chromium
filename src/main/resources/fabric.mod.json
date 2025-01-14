@@ -2,9 +2,8 @@
   "schemaVersion": 1,
   "id": "chromium",
   "version": "${version}",
-
   "name": "Chromium",
-  "description": "Another fabric mod with some functional",
+  "description": "This mod was created for personal use and includes some useful features that I use.",
   "authors": [
     "DenaryDev"
   ],
@@ -15,7 +14,6 @@
   },
   "license": "MIT",
   "icon": "assets/chromium/icon.png",
-
   "environment": "client",
   "entrypoints": {
     "main": [
@@ -30,17 +28,14 @@
   },
   "mixins": [
     "mixins.chromium.json",
-    "mixins.chromium.compat.sodium.json",
-    "mixins.chromium.compat.iris.json"
+    "mixins.chromium.compat.sodium.json"
   ],
   "accessWidener": "chromium.accesswidener",
-
   "depends": {
-    "fabricloader": ">=0.16",
-    "minecraft": "1.21.1",
+    "fabricloader": ">=0.16.10",
+    "minecraft": "1.21.4",
     "java": "21",
-    "fabric-api": ">=0.102",
-    "cloth-config": "15.0.x"
+    "yet_another_config_lib_v3": ">=3.6.0"
   },
   "breaks": {
     "rrls": "*"

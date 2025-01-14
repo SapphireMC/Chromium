@@ -1,6 +1,0 @@
-{
-  "required": false,
-  "package": "me.denarydev.chromium.client.compat.iris.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "client": []
-}

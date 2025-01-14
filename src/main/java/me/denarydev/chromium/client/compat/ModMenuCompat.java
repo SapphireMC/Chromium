@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -9,12 +9,16 @@ package me.denarydev.chromium.client.compat;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+import me.denarydev.chromium.ChromiumMod;
 import me.denarydev.chromium.client.gui.OptionsScreenBuilder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-public class ModMenuCompat implements ModMenuApi {
+@Environment(EnvType.CLIENT)
+public final class ModMenuCompat implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return screen -> OptionsScreenBuilder.build();
+        return parent -> new OptionsScreenBuilder(ChromiumMod.config()).createScreen(parent);
     }
 }

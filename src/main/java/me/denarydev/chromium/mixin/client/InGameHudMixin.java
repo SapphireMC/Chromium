@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -9,6 +9,7 @@ package me.denarydev.chromium.mixin.client;
 
 import com.google.common.base.Strings;
 import me.denarydev.chromium.ChromiumMod;
+import me.denarydev.chromium.client.util.GameInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -60,28 +61,28 @@ public abstract class InGameHudMixin {
     private void renderInfoPanel(DrawContext context, RenderTickCounter tickCounter) {
         boolean flag = this.client.world != null && (!this.client.options.hudHidden || this.client.currentScreen != null) && !this.debugHud.shouldShowDebugHud();
         if (flag) {
-            final var config = ChromiumMod.getConfig();
+            final var config = ChromiumMod.config();
             final var player = getCameraPlayer();
             final var info = new ArrayList<String>();
 
             if (config.showFps) {
-                info.add(ChromiumMod.getFpsString());
+                info.add(GameInfo.fps());
             }
 
             if (config.showTime) {
-                info.add(ChromiumMod.getTimeString());
+                info.add(GameInfo.time());
             }
 
             if (config.showCoords) {
-                info.add(ChromiumMod.getCoordsString(player));
+                info.add(GameInfo.coords(player));
             }
 
             if (config.showLight) {
-                info.add(ChromiumMod.getLightString(player));
+                info.add(GameInfo.light(player));
             }
 
             if (config.showBiome) {
-                info.add(ChromiumMod.getBiomeString(player));
+                info.add(GameInfo.biome(player));
             }
 
             if (!info.isEmpty()) {
